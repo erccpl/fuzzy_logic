@@ -19,32 +19,30 @@ shift = ctrl.Consequent(shift_universe, 'shift')
 
 
 # Membership functions
-obstacle['close'] = fuzz.trimf(obstacle_universe, [0, 0, 200] )
-obstacle['medium'] = fuzz.trimf(obstacle_universe, [150, 200, 250] )
-obstacle['far'] = fuzz.trimf(obstacle_universe, [200, 250, 400] )
+obstacle['close'] = fuzz.trimf(obstacle_universe, [0, 0, 150] )
+obstacle['medium'] = fuzz.trimf(obstacle_universe, [100, 200, 350] )
+obstacle['far'] = fuzz.trimf(obstacle_universe, [300, 400, 400] )
 
-wall['close'] = fuzz.trimf(wall_universe,  [0, 0, 250])
-wall['medium'] = fuzz.trimf(wall_universe,  [200, 300, 400] )
-wall['far'] = fuzz.trimf(wall_universe,  [350, 500, 500] )
+wall['close'] = fuzz.trimf(wall_universe,  [0, 0, 150])
+wall['medium'] = fuzz.trimf(wall_universe,  [125, 300, 400] )
+wall['far'] = fuzz.trimf(wall_universe,  [375, 500, 500] )
 
 speed['slow'] = fuzz.trimf(speed_universe , [0, 0, 2])
 speed['medium'] = fuzz.trimf(speed_universe , [1, 4, 7])
 speed['fast'] = fuzz.trimf(speed_universe , [5, 8, 9])
-speed['very_fast'] = fuzz.trimf(speed_universe , [ 7, 10, 10])
+speed['very_fast'] = fuzz.trimf(speed_universe , [ 8, 10, 10])
 
 
 
 # Output
-shift['none'] = fuzz.trimf(shift_universe, [0, 0, 3])
+shift['tiny'] = fuzz.trimf(shift_universe, [0, 0, 3])
 shift['small'] = fuzz.trimf(shift_universe, [2, 4, 6])
 shift['medium'] = fuzz.trimf(shift_universe, [5, 7, 9])
 shift['big'] = fuzz.trimf(shift_universe, [8, 10, 10])
 
 
 
-
 rules = [
-
 
     ctrl.Rule(antecedent=
               (obstacle['far'] & wall['close'] & speed['slow']) |
@@ -63,8 +61,7 @@ rules = [
               (obstacle['far'] & wall['far'] & speed['very_fast'])
 
               ,
-
-              consequent=shift['none']
+              consequent=shift['tiny']
               ),
 
 
@@ -80,7 +77,6 @@ rules = [
               (obstacle['medium'] & wall['far'] & speed['very_fast'])
 
             ,
-
             consequent=shift['small']
             ),
 
@@ -112,7 +108,7 @@ rules = [
              (obstacle['close'] & wall['far'] & speed['medium']) |
              (obstacle['close'] & wall['far'] & speed['fast']) |
              (obstacle['close'] & wall['far'] & speed['very_fast'])
-                 ,
+             ,
 
             consequent=shift['big']
             ),

@@ -8,8 +8,8 @@ from fuzzylogic import compute
 def generate_new_obstacle(can, width, obstacle_table):
     centre = random.randint(30, width-30)
 
-    x0 = centre - random.randint(10, 31)
-    x1 = centre + random.randint(10, 31)
+    x0 = centre - random.randint(10, 41)
+    x1 = centre + random.randint(10, 41)
 
     y0 = -random.randint(10, 40)
     y1 = -random.randint(10, 30)
@@ -24,8 +24,7 @@ def move_obstacles(c, speed, obstacle_table):
         c.move(item, 0, speed)
 
 
-def calc_dist_from_obstacle(my_coords, obstacle_coords):
-    # do I see an obstacle:
+def calc_dist_from_obstacle(my_coords, obstacle_coords, height):
     my_x0 = my_coords[0]
     my_y0 = my_coords[1]
     my_x1 = my_coords[2]
@@ -34,10 +33,10 @@ def calc_dist_from_obstacle(my_coords, obstacle_coords):
     ob_y0 = obstacle_coords[1]
     ob_x1 = obstacle_coords[2]
 
-    if ( (ob_x0 <= my_x0 <= ob_x1) or (ob_x0 <= my_x1 <= ob_x1) ) and ob_y0 <= 398 :
+    if ( (ob_x0 <= my_x0 <= ob_x1) or (ob_x0 <= my_x1 <= ob_x1) ) and ob_y0 <= height-2 :
         return my_y0 - ob_y0
     else:
-        return 399
+        return height-1
 
 
 def calc_dist_from_nearest_wall(my_coords, width):
@@ -68,15 +67,16 @@ def calc_dist_from_nearest_wall(my_coords, width):
 
 
 
-def get_first_visible_obstacle(canvas, my_ball, obstacle_table):
+def get_first_visible_obstacle(canvas, my_ball, obstacle_table, height):
     for item in obstacle_table:
-        ob_dist = calc_dist_from_obstacle(canvas.coords(my_ball), canvas.coords(item))
-        if ob_dist < 399:
+        ob_dist = calc_dist_from_obstacle(canvas.coords(my_ball), canvas.coords(item), height)
+        if ob_dist < height-1:
             return item
-    return canvas.create_rectangle(0,0,0,0)
+    return obstacle_table[0]
 
 
 current_direction = ""
+
 
 def main():
 
@@ -84,6 +84,7 @@ def main():
 
     # Program parameters:
     obstacle_speed = 5
+    new_obstacle_interval = 50
     update_interval = 0.02
     width = 500
     height = 400
@@ -94,6 +95,10 @@ def main():
     canvas = Canvas(animation, width=width, height=height)
     canvas.pack()
     canvas.configure(background="lightgrey")
+
+    # Initial rectangle
+    init_rec = canvas.create_rectangle(0, 0, 0, 0)
+    obstacle_table.append(init_rec)
 
     # The ball that wants to avoid the obstacles:
     ball = canvas.create_oval(240, 370, 260, 390, fill="red")
@@ -111,18 +116,18 @@ def main():
         move_obstacles(canvas, obstacle_speed, obstacle_table)
 
         # 2. Assess the situation:
-        #   2a get the obstacle distance:
-        visible = get_first_visible_obstacle(canvas, ball, obstacle_table)
-        print(canvas.coords(visible))
 
-        obstacle_distance = calc_dist_from_obstacle(canvas.coords(ball), canvas.coords(visible))
-        print(obstacle_distance)
-
-
-        #   2b get the wall distance:
-        nearest_wall_distance = calc_dist_from_nearest_wall(canvas.coords(ball), 500)
+        #   2a get the wall distance:
+        nearest_wall_distance = calc_dist_from_nearest_wall(canvas.coords(ball), width)
         print("Distance to wall:")
         print(nearest_wall_distance)
+
+        #   2b get the obstacle distance:
+        visible = get_first_visible_obstacle(canvas, ball, obstacle_table, height)
+        print(canvas.coords(visible))
+
+        obstacle_distance = calc_dist_from_obstacle(canvas.coords(ball), canvas.coords(visible), height)
+        print(obstacle_distance)
 
 
         # 3. Calculate the move:
@@ -139,7 +144,7 @@ def main():
 
         # 4. Update the animation
         counter+=1
-        if counter == 50:
+        if counter == new_obstacle_interval:
             generate_new_obstacle(canvas, width, obstacle_table)
             counter = 0
             #clean_up_obstacle_table()
