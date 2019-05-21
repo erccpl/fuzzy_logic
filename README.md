@@ -10,4 +10,4 @@ takes in three variables:
 
 and ouputs new speed (the last variable is therefore a feedback loop).
 Here's what that looks like in action:
-![](name-of-giphy.gif)
+![](ball.gif)
