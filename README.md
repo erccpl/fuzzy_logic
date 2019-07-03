@@ -9,5 +9,3 @@ takes in three variables:
 - current speed
 
 and ouputs new speed (the last variable is therefore a feedback loop).
-Here's what that looks like in action:
-![](ball.gif)
